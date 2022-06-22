@@ -1,6 +1,6 @@
 class App:
     __conf = {
-        # Use details
+        # User details - the template is fake
         "passport": "FD231B71",
         "password": "A1234567",
         # Captcha output directory
