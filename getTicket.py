@@ -162,6 +162,17 @@ def secondPage(driver):
 
 def thirdPage(driver):
     # Only available from 10:00 - 20:00
+    driver.implicitly_wait(0.5)
+    # Will try, by order, schedule from the 3rd day to the 7th day
+    for i in range(3, 8):
+        ButtonXPATH = '//*[@id="divSzArea"]/section[i]/div/div[3]/div/button'.format(i)
+        try:
+            button = driver.find_element(By.XPATH, ButtonXPATH)
+        except exceptions.NoSuchElementException:
+            print("Could not find button - ".format(i))
+            continue
+        driver.execute_script("arguments[0].click();", button)
+        break
     sleep(30)
 
 
