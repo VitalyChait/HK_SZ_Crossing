@@ -203,8 +203,8 @@ def testFunction():
                 draw.text((0, 30), captcha_text, fill=(100))
                 outImg.save(imgOUT_path + "_BAD" + imgFORMAT)
     print(results)
-    print("OK : ~Validating Text Length")
-    print("OK : ~Validating results with CSV")
+    print(correct)
+    print(correct_len)
 
 
 if __name__ == '__main__':
