@@ -6,10 +6,12 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.select import Select
 from base64 import b64decode
+from time import sleep
+import schedule
+from multiprocessing.pool import ThreadPool
+from json import loads
 from config import App
 from capcha_detector import runCaptchaDecoder
-from json import loads
-from time import sleep
 
 
 def userInformation():
@@ -146,6 +148,7 @@ def firstPage(driver, passport, password, img_out_PATH, img_out_format):
                 continue
     exit()
 
+
 def secondPage(driver):
     # Make sure page is fully loaded
     js_LOADED_XPATH = '/html/body/script[3]'
@@ -176,18 +179,41 @@ def thirdPage(driver):
     sleep(30)
 
 
-def run():
+def run(index):
     passport, password, img_out_PATH, img_out_format = userInformation()
     driver = driverSettings()
     websiteURL = "https://hk.sz.gov.cn:8118/userPage/login"
-
     # Load website
     driver.get(websiteURL)
     # First Page
     firstPage(driver, passport, password, img_out_PATH, img_out_format)
     secondPage(driver)
     thirdPage(driver)
+    return index
+
+
+def threaded_process():
+    print("Running")
+    num_of_processed = 5
+    index = [str(i) for i in range(num_of_processed)]
+    index_finished = ThreadPool(num_of_processed).imap_unordered(run, index)
+    for i in index_finished:
+        print(i)
+
+
+def scheduled_job():
+    schedule.every(1).seconds.do(threaded_process)
+    return schedule.CancelJob
 
 
 if __name__ == '__main__':
-    run()
+    sec = 0
+    schedule.every().day.at("15:47").do(scheduled_job)
+    while True:
+        # Checks whether a scheduled task is pending to run or not
+        schedule.run_pending()
+        if sec % 10 == 0:
+            print("Pending")
+        sec += 1
+        sec = sec % 59
+        sleep(1)
